@@ -1,0 +1,6 @@
+fastapi
+uvicorn
+requests
+dotenv
+cloudmersive_virus_api_client
+python-multipart
