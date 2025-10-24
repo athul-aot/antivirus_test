@@ -37,6 +37,7 @@ source venv/bin/activate
 
 pip install -r requirements.txt
 
+create .env file in root of backend folder and add env's
 
 VIRUSTOTAL_API_KEY=your_virustotal_key_here
 CLOUDMERSIVE_API_KEY=your_cloudmersive_key_here
