@@ -19,7 +19,7 @@ A full-stack antivirus scanning app with VirusTotal and Cloudmersive integration
 
 ---
 
-## 2. Backend Setup
+## 2. Code Setup
 
 ```bash
 git clone <your_repo_url>
