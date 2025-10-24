@@ -3,8 +3,9 @@ import { useRouter } from "next/router";
 import styles from "../../styles/Home.module.css";
 
 const apiEndpoints = {
-  virustotal: "http://localhost:8000/scan",
-  cloudmersive: "http://localhost:8000/scan/cloudmersive"
+  virustotal: "http://localhost:8000/scan/virustotal",
+  cloudmersive: "http://localhost:8000/scan/cloudmersive",
+  clamav: "http://localhost:8000/scan/clamav"
 };
 
 export default function Scanner() {
@@ -61,7 +62,9 @@ export default function Scanner() {
         <h1 style={{ fontSize: 28, marginBottom: 8 }}>
           {provider === "virustotal" && "🦠 VirusTotal File Scanner"}
           {provider === "cloudmersive" && "🌩️ Cloudmersive File Scanner"}
+          {provider === "clamav" && "🛡️ ClamAV File Scanner"}
         </h1>
+
         <label className={styles.fileUploadLabel}>
           {file ? file.name : "Choose a file"}
           <input

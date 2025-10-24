@@ -4,8 +4,10 @@ import styles from "../styles/Home.module.css";
 // pages/index.js addition
 const providers = [
   { name: "VirusTotal", id: "virustotal" },
-  { name: "Cloudmersive", id: "cloudmersive" }  // Added Cloudmersive here
+  { name: "Cloudmersive", id: "cloudmersive" },
+  { name: "ClamAV", id: "clamav" }
 ];
+
 
 export default function ProviderSelect() {
   const router = useRouter();

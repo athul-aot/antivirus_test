@@ -7,7 +7,7 @@ import tempfile
 from dotenv import load_dotenv
 import cloudmersive_virus_api_client
 from cloudmersive_virus_api_client.rest import ApiException
-
+import pyclamd
 load_dotenv()
 app = FastAPI()
 
@@ -29,7 +29,7 @@ def get_analysis_report(analysis_id):
     print("analysi response :", resp.text)
     return resp.json()
 
-@app.post("/scan")
+@app.post("/scan/virustotal")
 async def scan_file(file: UploadFile = File(...)):
     try:
         file_data = await file.read()
@@ -48,8 +48,8 @@ async def scan_file(file: UploadFile = File(...)):
 
         analysis_id = upload_data["data"]["id"]
 
-        MAX_POLL_TIME = 120  # seconds
-        poll_interval = 10   # seconds between polls
+        MAX_POLL_TIME = 60  # seconds
+        poll_interval = 15   # seconds between polls
         max_attempts = MAX_POLL_TIME // poll_interval
 
         for attempt in range(max_attempts):
@@ -176,3 +176,36 @@ async def scan_cloudmersive(file: UploadFile = File(...)):
         return {"error": f"Cloudmersive API error: {e}"}
     except Exception as e:
         return {"error": str(e)}
+
+
+@app.post("/scan/clamav")
+async def scan_clamav(file: UploadFile = File(...)):
+    contents = await file.read()
+
+    # Connect to ClamAV daemon over TCP
+    cd = pyclamd.ClamdNetworkSocket(host='127.0.0.1', port=3310)
+    if not cd.ping():
+        return {"error": "Cannot connect to ClamAV daemon"}
+
+    # Scan file bytes directly
+    scan_result = cd.scan_stream(contents)
+
+    if scan_result is None:
+        verdict = "✅ Safe"
+        stats = {"malicious": 0, "suspicious": 0, "undetected": 1,
+                 "harmless": 0, "timeout": 0, "type_unsupported": 0, "failure": 0}
+        results = []
+    else:
+        verdict = "🚨 Malicious!"
+        stats = {"malicious": 1, "suspicious": 0, "undetected": 0,
+                 "harmless": 0, "timeout": 0, "type_unsupported": 0, "failure": 0}
+        results = [{"engine": "ClamAV", "category": "malware", "result": list(scan_result.values())[0][0]}]
+
+    return {
+        "provider": "clamav",
+        "verdict": verdict,
+        "stats": stats,
+        "results": results,
+        "file_info": {"size": len(contents)},
+        "raw_report": scan_result if scan_result else {}
+    }

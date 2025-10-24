@@ -29,6 +29,9 @@ python -m venv venv
 # Activate venv
 # Windows:
 venv\Scripts\activate
+
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process
+
 # Mac/Linux:
 source venv/bin/activate
 
